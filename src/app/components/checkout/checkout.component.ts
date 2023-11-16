@@ -344,10 +344,10 @@ export class CheckoutComponent implements OnInit {
   onSubmitDummy() {
     console.log("Handling the submit button");
 
-    if (this.checkoutFormGroup.invalid) {
-      this.checkoutFormGroup.markAllAsTouched();
-      return;
-    }
+    // if (this.checkoutFormGroup.invalid) {
+    //   this.checkoutFormGroup.markAllAsTouched();
+    //   return;
+    // }
 
     // set up order
     let order = new Order();

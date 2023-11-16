@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { timeoutWith } from 'rxjs/operators';
 import { CartItem } from 'src/app/common/cart-item';
 import { CartService } from 'src/app/services/cart.service';
+import { AppSettings } from 'src/app/AppSettings';
+import { ProductNode } from 'src/app/shared/model/ProductNode';
 
 @Component({
   selector: 'app-product-list',
@@ -14,6 +16,7 @@ import { CartService } from 'src/app/services/cart.service';
 export class ProductListComponent implements OnInit {
 
   products: Product[] = [];
+  productsMongo: ProductNode[] = [];
   currentCategoryId: number = 1;
   previousCategoryId: number = 1;
   searchMode: boolean = false;
@@ -99,11 +102,17 @@ export class ProductListComponent implements OnInit {
 
     console.log(`currentCategoryId=${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
 
+    if(!AppSettings.NO_SQL) {
     // now get the products for the given category id
     this.productService.getProductListPaginate(this.thePageNumber - 1,
                                                this.thePageSize,
                                                this.currentCategoryId)
                                                .subscribe(this.processResult());
+    }else{
+     this.productService.getProductsFromMongoDB().subscribe(data => {
+      this.productsMongo = data.content;
+     }); 
+    }
   }
 
   processResult() {
@@ -121,9 +130,9 @@ export class ProductListComponent implements OnInit {
     this.listProducts();
   }
 
-  addToCart(theProduct: Product) {
+  addToCart(theProduct: ProductNode) {
     
-    console.log(`Adding to cart: ${theProduct.name}, ${theProduct.unitPrice}`);
+    console.log(`Adding to cart: ${theProduct.title}, ${theProduct.price}`);
 
     // TODO ... do the real work
     const theCartItem = new CartItem(theProduct);
